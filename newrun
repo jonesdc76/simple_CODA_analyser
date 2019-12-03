@@ -1,0 +1,64 @@
+#!/bin/bash
+
+DIR=~/
+#FILE=grinchadc_
+FILE=moller_data_
+EXT=.dat
+MAXEVENTS=5000000
+MYCHAN=4
+
+function usage() {
+   echo ""
+   echo "You need one argument:  the run number"
+   echo "Example:  newrun 1430"
+   echo "to analyze run 1430"
+   echo " "
+   echo "a 2nd arg is optional:  number of events"
+   echo "   newrun 1430 25000"
+   echo "   does 25000 events"
+   echo " "
+   echo "3rd arg is the channel number"
+   echo "    (where 1st chan = 0)"
+   echo " "
+   echo "try again ...."
+
+   exit
+}
+
+if [ $# -lt 1 ] ; then
+   usage
+fi
+
+if [ $# -ge 2 ] ; then
+   MAXEVENTS=$2
+fi
+
+if [ $# -eq 3 ] ; then
+   MYCHAN=$3
+fi
+
+run=$1
+FILENAME=$DIR$FILE$run$EXT
+
+if [ -e $FILENAME ] ; then
+   :
+else
+   echo ""
+   echo "ERROR:  File $FILENAME does not exist"
+   echo ""
+   echo "try again ...."
+   exit
+fi
+
+rm -f run.dat
+ln -s $FILENAME run.dat
+
+echo " "
+echo "Ready to analyze $MAXEVENTS events from the following file : "
+ls -la run.dat
+
+echo ""
+
+./xana $MAXEVENTS $MYCHAN
+
+cp ana.root ana_$1.root
